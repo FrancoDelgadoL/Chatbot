@@ -1,0 +1,18 @@
+define(['jquery'],function($){'use strict';function getCountdownConfig($element){return{endTime:$element.data('end-time'),timeDigits:$element.data('time-digits')==1,dayDigits:$element.data('time-digits')==1&&$element.data('day-digits')==1}}
+function buildCountdown($element){var config=getCountdownConfig($element);$element.trigger('ias-countdown-init');if(config.endTime){var nowDate=new Date().getTime();var endTime=new Date(config.endTime).getTime();if(!isNaN(endTime)){$element.addClass('ias-countdown-initialized');if(nowDate>=endTime){endCountdown($element);}else{let delta=Math.abs(endTime-nowDate)/ 1000,days=0,hours=0,minutes=0,seconds=0,$daysElement=$element.find('[data-role="day"]'),$hoursElement=$element.find('[data-role="hour"]'),$minsElement=$element.find('[data-role="minute"]'),$secsElement=$element.find('[data-role="second"]');if($daysElement.length){days=Math.floor(delta / 86400)
+delta-=days*86400;}
+if($hoursElement.length){hours=Math.floor(delta / 3600);if($daysElement.length){hours=hours%24;}
+delta-=hours*3600;}
+if($minsElement.length){minutes=Math.floor(delta / 60);if($hoursElement.length){minutes=minutes%60;}
+delta-=minutes*60;}
+if($secsElement.length){if($minsElement.length){seconds=Math.floor(delta%60);}else{seconds=Math.floor(delta);}}
+$daysElement.text((config.dayDigits&&days<10)?'0'+days:days);$hoursElement.text((config.timeDigits&&hours<10)?'0'+hours:hours);$minsElement.text((config.timeDigits&&minutes<10)?'0'+minutes:minutes);$secsElement.text((config.timeDigits&&seconds<10)?'0'+seconds:seconds);if(!days&&!hours&&!minutes&&!seconds){endCountdown($element);}else{$element.trigger('ias:countdown:init');var interval=setInterval(function(){if(!seconds){if(!minutes){if(!hours){if(days){days--;$daysElement.text((config.dayDigits&&days<10)?'0'+days:days);}
+hours=23;$hoursElement.text(hours);}else{hours--;$hoursElement.text((config.timeDigits&&hours<10)?'0'+hours:hours);}
+minutes=59;$minsElement.text(minutes);}else{minutes--;$minsElement.text((config.timeDigits&&minutes<10)?'0'+minutes:minutes);}
+seconds=59;$secsElement.text(seconds);}else{seconds--;$secsElement.text((config.timeDigits&&seconds<10)?'0'+seconds:seconds);if(!days&&!hours&&!minutes&&!seconds){endCountdown($element);clearInterval(interval);}}}.bind(this),1000);}}}else{endCountdown($element);}}}
+function endCountdown($element){if($element.data('hide-on-end')==1){$element.hide();}else{if($element.data('hide-title-on-end')==1){$element.find('[data-role="countdown-title"]').hide();}
+if($element.data('hide-timer-on-end')==1){$element.find('[data-role="countdown-wrapper"]').hide();}
+$element.find('[data-role="countdown-message"]').removeClass('no-display');}
+var config=getCountdownConfig($element);$element.find('[data-role="day"]').text((config.dayDigits)?'00':'0');$element.find('[data-role="hour"]').text((config.timeDigits)?'00':'0');$element.find('[data-role="minute"]').text((config.timeDigits)?'00':'0');$element.find('[data-role="second"]').text((config.timeDigits)?'00':'0');$element.trigger('ias:countdown:end');}
+return function(config,element){var $element=$(element);if(!$element.length){return false;}
+buildCountdown($element);$element.on('ias:countdown:trigger:end',function(){endCountdown($element);});return true;};});

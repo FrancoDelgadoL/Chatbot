@@ -1,0 +1,1 @@
+define(['ko'],function(ko){'use strict';return{selectedLocation:ko.observable(null),stores:ko.observable([]),filteredStores:ko.observable([]),};});
